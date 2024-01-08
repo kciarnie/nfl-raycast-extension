@@ -1,4 +1,4 @@
-import { ActionPanel, List, Action, Color, Icon } from "@raycast/api";
+import { ActionPanel, List, Action, Color, Icon, Detail } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 
 interface ScheduleResponse {
@@ -321,8 +321,9 @@ interface ProgressiveDownload {
 function formatGameToMarkdown(gameInfo: EventsItem) {
   let markdownText = ``;
   //   markdownText += `## ![Away Team Logo](${gameInfo.awayTeam.logo}?raycast-width=25&raycast-height=25) ${gameInfo.awayTeam.placeName.default} (${gameInfo.awayTeam.abbrev}) @  ${gameInfo.homeTeam.placeName.default} (${gameInfo.homeTeam.abbrev}) ![Home Team Logo](${gameInfo.homeTeam.logo}?raycast-width=25&raycast-height=25)\n\n`;
-
-  markdownText += `## ${gameInfo.competitions[0].competitors[1].team.logo}?raycast-width=75&raycast-height=75 @ (${gameInfo.competitions[0].competitors[0].team.logo}?raycast-width=75&raycast-height=75)\n\n`;
+  markdownText += `## ![Team Logo](${gameInfo.competitions[0].competitors[1].team.logo}?raycast-width=150&raycast-height=150)`
+  markdownText += ` @ `
+  markdownText += `![Team Logo](${gameInfo.competitions[0].competitors[0].team.logo}?raycast-width=150&raycast-height=150)\n\n`;
   markdownText += `**Venue:** ${gameInfo.competitions[0].venue.fullName}\n`;
 
   markdownText += `### Broadcasting Networks\n\n`;
@@ -331,12 +332,9 @@ function formatGameToMarkdown(gameInfo: EventsItem) {
   });
 
   markdownText += `\n### Useful Links\n\n`;
-  // markdownText += `[Buy Tickets](${gameInfo.links[0].href})\n`;
-  // markdownText += `\n[Game Center Link](${gameInfo.links[1].href})\n`;
-  // markdownText += `\n[Game Preview Link](${gameInfo.links[2].href})\n`;
-  // markdownText += `\n[Game Recap Link](${gameInfo.links[3].href})\n`;
-  // markdownText += `\n[Game Box Score Link](${gameInfo.links[4].href})\n`;
-  // markdownText += `\n[Game Play By Play Link](${gameInfo.links[5].href})\n`;
+  gameInfo.links.forEach((link: LinksItem) => {
+    markdownText += `- [${link.text}](${link.href})\n`;
+  });
 
   return markdownText;
 }
@@ -365,6 +363,7 @@ export default function Command() {
       if (!gamesPerDay[day]) {
         gamesPerDay[day] = [];
       }
+      /// Only push unique games into the list
       gamesPerDay[day].push(event);
       return gamesPerDay;
     }, {});
@@ -375,13 +374,15 @@ export default function Command() {
         return (
           date && <List.Section title={date}>
             {listSections[date].map((event: EventsItem) => (
-              event && <List.Item key={event.id + event.uid}
+              event && <List.Item key={event.id}
                 title={event.name}
                 subtitle={event.shortName}
-                // detail={<List.Item.Detail markdown={formatGameToMarkdown(event)} />}
                 actions={
                   <ActionPanel>
-                    <Action title="View Game Details" icon={{ source: Icon.ArrowRight }} />
+                    <Action.Push
+                      title="View Game Details"
+                      target={<Detail markdown={formatGameToMarkdown(event)} />}
+                    />
                   </ActionPanel>
                 }
                 accessories={
