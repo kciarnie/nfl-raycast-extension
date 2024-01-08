@@ -318,25 +318,28 @@ interface ProgressiveDownload {
   href: string;
 }
 
-// function formatGameToMarkdown(gameInfo: Game) {
-//   console.log(gameInfo);
-//   let markdownText = ``;
-//   markdownText += `## ![Away Team Logo](${gameInfo.awayTeam.logo}?raycast-width=25&raycast-height=25) ${gameInfo.awayTeam.placeName.default} (${gameInfo.awayTeam.abbrev}) @  ${gameInfo.homeTeam.placeName.default} (${gameInfo.homeTeam.abbrev}) ![Home Team Logo](${gameInfo.homeTeam.logo}?raycast-width=25&raycast-height=25)\n\n`;
-//   markdownText += `**Venue:** ${gameInfo.venue.default}\n`;
+function formatGameToMarkdown(gameInfo: EventsItem) {
+  let markdownText = ``;
+  //   markdownText += `## ![Away Team Logo](${gameInfo.awayTeam.logo}?raycast-width=25&raycast-height=25) ${gameInfo.awayTeam.placeName.default} (${gameInfo.awayTeam.abbrev}) @  ${gameInfo.homeTeam.placeName.default} (${gameInfo.homeTeam.abbrev}) ![Home Team Logo](${gameInfo.homeTeam.logo}?raycast-width=25&raycast-height=25)\n\n`;
 
-//   markdownText += `### Broadcasting Networks\n\n`;
-//   gameInfo.tvBroadcasts.forEach((broadcast: TVBroadcast) => {
-//     markdownText += `- **${broadcast.network}** (${broadcast.market}, ${broadcast.countryCode})\n`;
-//   });
+  markdownText += `## ${gameInfo.competitions[0].competitors[1].team.logo}?raycast-width=75&raycast-height=75 @ (${gameInfo.competitions[0].competitors[0].team.logo}?raycast-width=75&raycast-height=75)\n\n`;
+  markdownText += `**Venue:** ${gameInfo.competitions[0].venue.fullName}\n`;
 
-//   markdownText += `\n### Useful Links\n\n`;
-//   markdownText += `[Buy Tickets](${gameInfo.ticketsLink})\n`;
-//   markdownText += `\n[NHL Game Center Link](https://www.nhl.com${gameInfo.gameCenterLink})\n`;
-//   markdownText += `\n[Away Team Radio Broadcast](${gameInfo.awayTeam.radioLink})\n`;
-//   markdownText += `\n[Home Team Radio Broadcast](${gameInfo.homeTeam.radioLink})\n`;
+  markdownText += `### Broadcasting Networks\n\n`;
+  gameInfo.competitions[0].broadcasts.forEach((broadcast: BroadcastsItem) => {
+    markdownText += `- **${broadcast.market}** (${broadcast.names.join(", ")})\n`;
+  });
 
-//   return markdownText;
-// }
+  markdownText += `\n### Useful Links\n\n`;
+  // markdownText += `[Buy Tickets](${gameInfo.links[0].href})\n`;
+  // markdownText += `\n[Game Center Link](${gameInfo.links[1].href})\n`;
+  // markdownText += `\n[Game Preview Link](${gameInfo.links[2].href})\n`;
+  // markdownText += `\n[Game Recap Link](${gameInfo.links[3].href})\n`;
+  // markdownText += `\n[Game Box Score Link](${gameInfo.links[4].href})\n`;
+  // markdownText += `\n[Game Play By Play Link](${gameInfo.links[5].href})\n`;
+
+  return markdownText;
+}
 
 export default function Command() {
   const url = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard`;
@@ -354,38 +357,58 @@ export default function Command() {
     weekday: "long",
   };
 
+  /// Organise the data into a chronological list, where it is organised by the day like "Saturday" make them into List Sections
+  /// Each List Section has a header of the day and then the list of games for that day
+  const listSections = data &&
+    (data.events || []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).reduce((gamesPerDay: any, event: EventsItem) => {
+      const day = new Date(event.date).toLocaleDateString([], dateOption);
+      if (!gamesPerDay[day]) {
+        gamesPerDay[day] = [];
+      }
+      gamesPerDay[day].push(event);
+      return gamesPerDay;
+    }, {});
+
   return (
     <List isLoading={isLoading}>
-      {data && (data.events || []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((event: EventsItem) => (
-        /// List Item for each event
-        < List.Item key={event.id}
-          title={event.name}
-          subtitle={event.shortName}
-          accessories={
-            [
-              // If the game happened, display the score, make it a tag and show it like 
-              event.status.type.completed ?
-                {
-                  tag: {
-                    value:
-                      "FINAL " + event.competitions[0].competitors[0].score + "-" +
-                      event.competitions[0].competitors[1].score, color: Color.PrimaryText
-                  }
-                } : {},
-              // time options for the game 
-              { text: { value: new Date(event.date).toLocaleTimeString([], timeOptions), color: Color.PrimaryText } },
-              // Date options for the game
-              { text: { value: new Date(event.date).toLocaleDateString([], dateOption), color: Color.PrimaryText } },
-              /// Away Team Logo
-              { icon: event.competitions[0].competitors[1].team.logo },
-              /// VS
-              { text: { value: "vs", color: Color.PrimaryText } },
-              /// Home Team Logo
-              { icon: event.competitions[0].competitors[0].team.logo },
-            ]}
-        />
-      ))
-      }
+      {listSections && Object.keys(listSections).map((date: string) => {
+        return (
+          date && <List.Section title={date}>
+            {listSections[date].map((event: EventsItem) => (
+              event && <List.Item key={event.id + event.uid}
+                title={event.name}
+                subtitle={event.shortName}
+                // detail={<List.Item.Detail markdown={formatGameToMarkdown(event)} />}
+                actions={
+                  <ActionPanel>
+                    <Action title="View Game Details" icon={{ source: Icon.ArrowRight }} />
+                  </ActionPanel>
+                }
+                accessories={
+                  [
+                    // If the game happened, display the score, make it a tag and show it like 
+                    event.status.type.completed ?
+                      {
+                        tag: {
+                          value:
+                            "FINAL " + event.competitions[0].competitors[0].score + "-" +
+                            event.competitions[0].competitors[1].score, color: Color.PrimaryText
+                        }
+                      } : {},
+                    // time options for the game 
+                    { text: { value: new Date(event.date).toLocaleTimeString([], timeOptions), color: Color.PrimaryText } },
+                    /// Away Team Logo
+                    { icon: event.competitions[0].competitors[1].team.logo },
+                    /// VS
+                    { text: { value: "vs", color: Color.PrimaryText } },
+                    /// Home Team Logo
+                    { icon: event.competitions[0].competitors[0].team.logo },
+                  ]}
+              />
+            ))}
+          </List.Section>
+        )
+      })}
       <List.EmptyView icon={{ source: "sad-puck.png" }} title="Something went wrong" />
     </List >
   );
