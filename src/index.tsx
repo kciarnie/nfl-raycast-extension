@@ -318,6 +318,43 @@ interface ProgressiveDownload {
   href: string;
 }
 
+function GameDetailView(props: { gameInfo: EventsItem }) {
+  const { gameInfo } = props;
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const dateOption: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+  };
+
+  return (
+    <Detail
+      markdown={formatGameToMarkdown(gameInfo)}
+      navigationTitle={gameInfo.name}
+      metadata={
+        <Detail.Metadata>
+          <Detail.Metadata.Label title="Date" text={new Date(gameInfo.date).toLocaleDateString([], dateOption)} />
+          <Detail.Metadata.Label title="Time" text={new Date(gameInfo.date).toLocaleTimeString([], timeOptions)} />
+
+          <Detail.Metadata.TagList title="Venue">
+            <Detail.Metadata.TagList.Item text={gameInfo.competitions[0].venue.fullName} color={gameInfo.competitions[0].competitors[0].team.color} />
+          </Detail.Metadata.TagList>
+          <Detail.Metadata.Label title="Venue" text={gameInfo.competitions[0].venue.fullName} />
+          <Detail.Metadata.Separator />
+          <Detail.Metadata.Label title="Away Team Score" text={gameInfo.competitions[0].competitors[1].score} />
+          <Detail.Metadata.Label title="Home Team Score" text={gameInfo.competitions[0].competitors[0].score} />
+          <Detail.Metadata.Separator />
+          <Detail.Metadata.Label title="Broadcasts" text={gameInfo.competitions[0].broadcasts.map((broadcast: BroadcastsItem) => broadcast.market).join(", ")} />
+          <Detail.Metadata.Separator />
+        </Detail.Metadata>
+      }
+    />
+  );
+}
+
+
 function formatGameToMarkdown(gameInfo: EventsItem) {
   let markdownText = ``;
   //   markdownText += `## ![Away Team Logo](${gameInfo.awayTeam.logo}?raycast-width=25&raycast-height=25) ${gameInfo.awayTeam.placeName.default} (${gameInfo.awayTeam.abbrev}) @  ${gameInfo.homeTeam.placeName.default} (${gameInfo.homeTeam.abbrev}) ![Home Team Logo](${gameInfo.homeTeam.logo}?raycast-width=25&raycast-height=25)\n\n`;
@@ -381,7 +418,7 @@ export default function Command() {
                   <ActionPanel>
                     <Action.Push
                       title="View Game Details"
-                      target={<Detail markdown={formatGameToMarkdown(event)} />}
+                      target={<GameDetailView gameInfo={event} />}
                     />
                   </ActionPanel>
                 }
