@@ -352,14 +352,12 @@ export default function Command() {
 
   const dateOption: Intl.DateTimeFormatOptions = {
     weekday: "long",
-    // month: "short",
-    // day: "numeric",
   };
 
   return (
     <List isLoading={isLoading}>
-      /// Sort the events by date
-      {data && (data.events || []).map((event: EventsItem) => (
+      {data && (data.events || []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((event: EventsItem) => (
+        /// List Item for each event
         < List.Item key={event.id}
           title={event.name}
           subtitle={event.shortName}
@@ -386,45 +384,9 @@ export default function Command() {
               { icon: event.competitions[0].competitors[0].team.logo },
             ]}
         />
-      ))}
+      ))
+      }
       <List.EmptyView icon={{ source: "sad-puck.png" }} title="Something went wrong" />
-    </List>
+    </List >
   );
-}
-
-function GamesList(events: EventsItem[]) {
-  return events.map((event: EventsItem) => (
-    <List.Item
-      key={event.id}
-      title={event.name}
-      subtitle={event.shortName}
-    // keywords={event.keywords.concat(`${event.dayOfWeek} @ ${event.time}`)}
-    // icon={{ source: event.competitions[0].competitors[0].team.logo }}
-    // accessories={[
-    //   event.score
-    //     ? {
-    //       tag: {
-    //         value: event.score ? "FINAL: " + event.score : "",
-    //         color: Color.PrimaryText,
-    //       },
-    //     }
-    //     : {},
-    //   {
-    //     text: { value: dateToDayOfWeek(event.date), color: Color.Green },
-    //     icon: Icon.Alarm,
-    //   },
-    //   { tag: event.time },
-    // ]}
-    // actions={
-    //   <ActionPanel>
-    //     <Action.Push title="Game Details" target={<GameDetails {...event} />} />
-    //     <Action.OpenInBrowser
-    //       title="Streamable"
-    //       // url={streamableLink(event)}
-    //       shortcut={{ modifiers: ["cmd"], key: "s" }}
-    //     />
-    //   </ActionPanel>
-    // }
-    />
-  ));
 }
