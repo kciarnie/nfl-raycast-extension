@@ -326,33 +326,30 @@ function GameDetailView(props: { gameInfo: EventsItem }) {
   };
 
   const dateOption: Intl.DateTimeFormatOptions = {
-    weekday: "long",
+    weekday: "long"
   };
 
+  const gameDate = new Date(gameInfo.date);
+  const gameTime = gameDate.toLocaleDateString([], dateOption) + " " + gameDate.toLocaleTimeString([], timeOptions);
+  const gameScore = gameInfo.competitions[0].competitors[1].score + "-" + gameInfo.competitions[0].competitors[0].score;
+  const networks = gameInfo.competitions[0].broadcasts.map((broadcast: BroadcastsItem) => broadcast.names).join(", ");
   return (
     <Detail
       markdown={formatGameToMarkdown(gameInfo)}
       navigationTitle={gameInfo.name}
       metadata={
         <Detail.Metadata>
-          <Detail.Metadata.Label title="Date" text={new Date(gameInfo.date).toLocaleDateString([], dateOption)} />
-          <Detail.Metadata.Label title="Time" text={new Date(gameInfo.date).toLocaleTimeString([], timeOptions)} />
+          {gameInfo.status.type.completed && <Detail.Metadata.Label title="Game Score" text={gameScore} />}
+          {gameInfo.status.type.completed && <Detail.Metadata.Separator />}
 
+          <Detail.Metadata.Label title="Game Time" text={gameTime} />
           <Detail.Metadata.TagList title="Venue">
             <Detail.Metadata.TagList.Item
               text={gameInfo.competitions[0].venue.fullName}
               color={gameInfo.competitions[0].competitors[0].team.color}
             />
           </Detail.Metadata.TagList>
-          <Detail.Metadata.Label title="Venue" text={gameInfo.competitions[0].venue.fullName} />
-          <Detail.Metadata.Separator />
-          <Detail.Metadata.Label title="Away Team Score" text={gameInfo.competitions[0].competitors[1].score} />
-          <Detail.Metadata.Label title="Home Team Score" text={gameInfo.competitions[0].competitors[0].score} />
-          <Detail.Metadata.Separator />
-          <Detail.Metadata.Label
-            title="Broadcasts"
-            text={gameInfo.competitions[0].broadcasts.map((broadcast: BroadcastsItem) => broadcast.market).join(", ")}
-          />
+          <Detail.Metadata.Label title="Networks" text={networks} />
           <Detail.Metadata.Separator />
         </Detail.Metadata>
       }
@@ -366,12 +363,6 @@ function formatGameToMarkdown(gameInfo: EventsItem) {
   markdownText += `## ![Team Logo](${gameInfo.competitions[0].competitors[1].team.logo}?raycast-width=150&raycast-height=150)`;
   markdownText += ` @ `;
   markdownText += `![Team Logo](${gameInfo.competitions[0].competitors[0].team.logo}?raycast-width=150&raycast-height=150)\n\n`;
-  markdownText += `**Venue:** ${gameInfo.competitions[0].venue.fullName}\n`;
-
-  markdownText += `### Broadcasting Networks\n\n`;
-  gameInfo.competitions[0].broadcasts.forEach((broadcast: BroadcastsItem) => {
-    markdownText += `- **${broadcast.market}** (${broadcast.names.join(", ")})\n`;
-  });
 
   markdownText += `\n### Useful Links\n\n`;
   gameInfo.links.forEach((link: LinksItem) => {
@@ -436,15 +427,15 @@ export default function Command() {
                           // If the game happened, display the score, make it a tag and show it like
                           event.status.type.completed
                             ? {
-                                tag: {
-                                  value:
-                                    "FINAL " +
-                                    event.competitions[0].competitors[0].score +
-                                    "-" +
-                                    event.competitions[0].competitors[1].score,
-                                  color: Color.PrimaryText,
-                                },
-                              }
+                              tag: {
+                                value:
+                                  "FINAL " +
+                                  event.competitions[0].competitors[0].score +
+                                  "-" +
+                                  event.competitions[0].competitors[1].score,
+                                color: Color.PrimaryText,
+                              },
+                            }
                             : {},
                           // time options for the game
                           {
