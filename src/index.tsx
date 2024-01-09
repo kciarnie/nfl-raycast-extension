@@ -326,7 +326,7 @@ function GameDetailView(props: { gameInfo: EventsItem }) {
   };
 
   const dateOption: Intl.DateTimeFormatOptions = {
-    weekday: "long"
+    weekday: "long",
   };
 
   const gameDate = new Date(gameInfo.date);
@@ -427,15 +427,15 @@ export default function Command() {
                           // If the game happened, display the score, make it a tag and show it like
                           event.status.type.completed
                             ? {
-                              tag: {
-                                value:
-                                  "FINAL " +
-                                  event.competitions[0].competitors[0].score +
-                                  "-" +
-                                  event.competitions[0].competitors[1].score,
-                                color: Color.PrimaryText,
-                              },
-                            }
+                                tag: {
+                                  value:
+                                    "FINAL " +
+                                    event.competitions[0].competitors[0].score +
+                                    "-" +
+                                    event.competitions[0].competitors[1].score,
+                                  color: Color.PrimaryText,
+                                },
+                              }
                             : {},
                           // time options for the game
                           {
