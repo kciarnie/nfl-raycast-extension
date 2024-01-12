@@ -1,11 +1,10 @@
-export interface ScheduleResponse {
+interface ScheduleResponse {
     leagues: LeaguesItem[];
     season: Season;
     week: Week;
     events: EventsItem[];
 }
-
-export interface LeaguesItem {
+interface LeaguesItem {
     id: string;
     uid: string;
     name: string;
@@ -19,8 +18,7 @@ export interface LeaguesItem {
     calendarEndDate: string;
     calendar: CalendarItem[];
 }
-
-export interface Season {
+interface Season {
     year: number;
     startDate?: string;
     endDate?: string;
@@ -28,7 +26,6 @@ export interface Season {
     type: Type | number;
     slug?: string;
 }
-
 interface Type {
     id: string;
     type?: number;
@@ -41,7 +38,6 @@ interface Type {
     shortDetail?: string;
     shortName?: string;
 }
-
 interface LogosItem {
     href: string;
     width: number;
@@ -50,7 +46,6 @@ interface LogosItem {
     rel: string[];
     lastUpdated: string;
 }
-
 interface CalendarItem {
     label: string;
     value: string;
@@ -58,7 +53,6 @@ interface CalendarItem {
     endDate: string;
     entries: EntriesItem[];
 }
-
 interface EntriesItem {
     label: string;
     alternateLabel: string;
@@ -67,12 +61,10 @@ interface EntriesItem {
     startDate: string;
     endDate: string;
 }
-
-export interface Week {
+interface Week {
     number: number;
 }
-
-export interface EventsItem {
+interface EventsItem {
     id: string;
     uid: string;
     date: string;
@@ -82,9 +74,9 @@ export interface EventsItem {
     week: Week;
     competitions: CompetitionsItem[];
     links: LinksItem[];
+    weather: Weather;
     status: Status;
 }
-
 interface CompetitionsItem {
     id: string;
     uid: string;
@@ -98,14 +90,15 @@ interface CompetitionsItem {
     recent: boolean;
     venue: Venue;
     competitors: CompetitorsItem[];
-    notes: any[];
+    notes: NotesItem[];
     status: Status;
     broadcasts: BroadcastsItem[];
     leaders: LeadersItem[];
     format: Format;
+    tickets: TicketsItem[];
     startDate: string;
     geoBroadcasts: GeoBroadcastsItem[];
-    headlines: HeadlinesItem[];
+    odds: OddsItem[];
 }
 interface Venue {
     id: string;
@@ -124,12 +117,11 @@ interface CompetitorsItem {
     type: string;
     order: number;
     homeAway: string;
-    winner: boolean;
     team: Team;
     score: string;
-    linescores: LinescoresItem[];
     statistics: any[];
     records: RecordsItem[];
+    leaders: LeadersItem[];
 }
 interface Team {
     id: string;
@@ -146,8 +138,8 @@ interface Team {
     links?: LinksItem[];
     logo?: string;
 }
-export interface LinksItem {
-    rel: string[];
+interface LinksItem {
+    rel?: string[];
     href: string;
     text?: string;
     isExternal?: boolean;
@@ -155,24 +147,11 @@ export interface LinksItem {
     language?: string;
     shortText?: string;
 }
-interface LinescoresItem {
-    value: number;
-}
 interface RecordsItem {
     name: string;
     abbreviation?: string;
     type: string;
     summary: string;
-}
-interface Status {
-    clock: number;
-    displayClock: string;
-    period: number;
-    type: Type;
-}
-interface BroadcastsItem {
-    market: string;
-    names: string[];
 }
 interface LeadersItem {
     name?: string;
@@ -200,11 +179,30 @@ interface Athlete {
 interface Position {
     abbreviation: string;
 }
+interface NotesItem {
+    type: string;
+    headline: string;
+}
+interface Status {
+    clock: number;
+    displayClock: string;
+    period: number;
+    type: Type;
+}
+interface BroadcastsItem {
+    market: string;
+    names: string[];
+}
 interface Format {
     regulation: Regulation;
 }
 interface Regulation {
     periods: number;
+}
+interface TicketsItem {
+    summary: string;
+    numberAvailable: number;
+    links: LinksItem[];
 }
 interface GeoBroadcastsItem {
     type: Type;
@@ -220,97 +218,67 @@ interface Market {
 interface Media {
     shortName: string;
 }
-interface HeadlinesItem {
-    description: string;
-    type: string;
-    shortLinkText: string;
-    video?: VideoItem[];
+interface OddsItem {
+    provider: Provider;
+    details: string;
+    overUnder: number;
+    spread: number;
+    awayTeamOdds: AwayTeamOdds;
+    homeTeamOdds: HomeTeamOdds;
+    open: Open;
+    current: Current;
 }
-interface VideoItem {
-    id: number;
-    source: string;
-    headline: string;
-    thumbnail: string;
-    duration: number;
-    tracking: Tracking;
-    deviceRestrictions: DeviceRestrictions;
-    links: Links;
+interface Provider {
+    id: string;
+    name: string;
+    priority: number;
 }
-interface Tracking {
-    sportName: string;
-    leagueName: string;
-    coverageType: string;
-    trackingName: string;
-    trackingId: string;
+interface AwayTeamOdds {
+    favorite: boolean;
+    underdog: boolean;
+    team: Team;
 }
-interface DeviceRestrictions {
-    type: string;
-    devices: string[];
+interface HomeTeamOdds {
+    favorite: boolean;
+    underdog: boolean;
+    team: Team;
 }
-interface Links {
-    api: Api;
-    web: Web;
-    source: Source;
-    mobile: Mobile;
+interface Open {
+    over: Over;
+    under: Under;
+    total: Total;
 }
-interface Api {
-    self: Self;
-    artwork: Artwork;
+interface Over {
+    value: number;
+    displayValue: string;
+    alternateDisplayValue: string;
 }
-interface Self {
+interface Under {
+    value: number;
+    displayValue: string;
+    alternateDisplayValue: string;
+}
+interface Total {
+    alternateDisplayValue: string;
+}
+interface Current {
+    over: Over;
+    under: Under;
+    total: Total;
+}
+interface Weather {
+    displayValue: string;
+    temperature: number;
+    highTemperature: number;
+    conditionId: string;
+    link: Link;
+}
+interface Link {
+    language: string;
+    rel: string[];
     href: string;
-}
-interface Artwork {
-    href: string;
-}
-interface Web {
-    href: string;
-    short: {
-        href: string;
-    };
-    self: Self;
-}
-interface Source {
-    mezzanine?: Mezzanine;
-    flash?: Flash;
-    hds?: Hds;
-    HLS?: HLS;
-    HD?: HD;
-    full?: Full;
-    href: string;
-}
-interface Mezzanine {
-    href: string;
-}
-interface Flash {
-    href: string;
-}
-interface Hds {
-    href: string;
-}
-interface HLS {
-    href: string;
-    HD: HD;
-}
-interface HD {
-    href: string;
-}
-interface Full {
-    href: string;
-}
-interface Mobile {
-    alert: Alert;
-    source: Source;
-    href: string;
-    streaming: Streaming;
-    progressiveDownload: ProgressiveDownload;
-}
-interface Alert {
-    href: string;
-}
-interface Streaming {
-    href: string;
-}
-interface ProgressiveDownload {
-    href: string;
+    text: string;
+    shortText: string;
+    isExternal: boolean;
+    isPremium: boolean;
 }
