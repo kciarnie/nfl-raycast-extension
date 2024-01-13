@@ -1,6 +1,6 @@
 import { ActionPanel, List, Action, Color, Detail } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { BroadcastsItem, CompetitorsItem, ScheduleResponse, EventsItem, LinksItem } from "./response";
+import { BroadcastsItem, CompetitorsItem, ScheduleResponse, EventsItem, LinksItem } from "./model/schedule-response";
 
 const timeOptions: Intl.DateTimeFormatOptions = {
   hour: "2-digit",
