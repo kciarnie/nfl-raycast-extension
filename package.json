@@ -1,25 +1,32 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "nfl-schedule",
-  "title": "NFL Schedule",
-  "description": "Fetches the NFL Schedule",
+  "name": "nfl-information",
+  "title": "NFL",
+  "description": "Fetches the NFL Schedule, News, and Team News",
   "icon": "nfl-logo.png",
   "author": "kciarnie",
   "categories": [
-    "Fun"
+    "Fun",
+    "News"
   ],
   "license": "MIT",
   "commands": [
     {
       "name": "nfl-schedule",
-      "title": "NFL Schedule",
+      "title": "Weekly Schedule",
       "description": "Fetches the schedule for the NFL Week",
       "mode": "view"
     },
     {
       "name": "nfl-news",
-      "title": "NFL News",
+      "title": "Latest News",
       "description": "Fetches the latest NFL News",
+      "mode": "view"
+    },
+    {
+      "name": "nfl-team",
+      "title": "Team Information",
+      "description": "Fetches the latest news for a specific NFL Team",
       "mode": "view"
     }
   ],
