@@ -87,13 +87,13 @@ function formatGameToMarkdown(gameInfo: EventsItem) {
     markdownText += `- [${link.text}](${link.href})\n`;
   });
 
-  const awayPassingLeader = awayTeam.leaders[0]?.leaders[0];
-  const awayRushingLeader = awayTeam.leaders[1]?.leaders[0];
-  const awayReceivingLeader = awayTeam.leaders[2]?.leaders[0];
+  const awayPassingLeader = awayTeam.leaders[0].leaders[0];
+  const awayRushingLeader = awayTeam.leaders[1].leaders[0];
+  const awayReceivingLeader = awayTeam.leaders[2].leaders[0];
 
-  const homePassingLeader = homeTeam?.leaders[0]?.leaders[0] ?? null;
-  const homeRushingLeader = homeTeam?.leaders[1]?.leaders[0] ?? null;
-  const homeReceivingLeader = homeTeam?.leaders[2]?.leaders[0] ?? null;
+  const homePassingLeader = homeTeam?.leaders[0].leaders[0];
+  const homeRushingLeader = homeTeam?.leaders[1].leaders[0];
+  const homeReceivingLeader = homeTeam?.leaders[2].leaders[0];
 
   if (awayPassingLeader && homePassingLeader && awayPassingLeader.athlete && homePassingLeader.athlete) {
     markdownText += `### Passing Leaders\n\n`;
