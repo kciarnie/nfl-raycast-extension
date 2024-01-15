@@ -13,7 +13,6 @@ export default function Command() {
     return <List isLoading={true} />;
   }
 
-
   // Lists the news articles
   return (
     <List isLoading={isLoading}>
@@ -24,7 +23,7 @@ export default function Command() {
           icon={article.images[0].url}
           actions={
             <ActionPanel>
-              <Action.OpenInBrowser title="Open in Browser" url={article.links.web.href ?? ''} />
+              <Action.OpenInBrowser title="Open in Browser" url={article.links.web.href ?? ""} />
             </ActionPanel>
           }
         />

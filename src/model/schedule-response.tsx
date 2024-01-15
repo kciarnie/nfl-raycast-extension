@@ -167,7 +167,7 @@ export interface LeaderInnerItem {
   displayValue: string;
   value: number;
   athlete: Athlete;
-  team: InnerTeam
+  team: InnerTeam;
 }
 
 export interface InnerTeam {

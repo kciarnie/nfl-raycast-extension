@@ -1,6 +1,6 @@
 import { ActionPanel, List, Action, Color, Detail } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { BroadcastsItem, CompetitorsItem, ScheduleResponse, EventsItem, LinksItem, LeadersItem } from "./model/schedule-response";
+import { BroadcastsItem, CompetitorsItem, ScheduleResponse, EventsItem, LinksItem } from "./model/schedule-response";
 
 const timeOptions: Intl.DateTimeFormatOptions = {
   hour: "2-digit",
@@ -124,7 +124,12 @@ function formatGameToMarkdown(gameInfo: EventsItem) {
   return markdownText;
 }
 
-function Section(props: { date: string; eventsByDay: [string: EventsItem]; timeOptions: Intl.DateTimeFormatOptions }) {
+// inputDictionary: { [key: string]: number }
+function Section(props: {
+  date: string;
+  eventsByDay: { [key: string]: EventsItem[] };
+  timeOptions: Intl.DateTimeFormatOptions;
+}) {
   /**
    * Show a list section for a specific day
    * @param props
